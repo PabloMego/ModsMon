@@ -1,0 +1,111 @@
+
+import React, { useState, useEffect } from 'react';
+
+interface Player {
+  id: string;
+  name: string;
+  avatar: string;
+}
+
+const ServerStatus: React.FC = () => {
+  const [playerCount, setPlayerCount] = useState(24);
+  const [uptime, setUptime] = useState('12d 04h 32m');
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Simulate fetching data from a real-time server API
+  useEffect(() => {
+    const fetchServerData = () => {
+      // Mocking the player list
+      const mockNames = ['Steve', 'Alex', 'Herobrine', 'Notch', 'Techno', 'Dream', 'Mon', 'Gitano', 'Mongolo', 'CreeperHunter', 'RedstoneKing', 'Miner49er'];
+      const mockPlayers = Array.from({ length: 24 }).map((_, i) => ({
+        id: Math.random().toString(36).substr(2, 9),
+        name: mockNames[i % mockNames.length] + (i > 10 ? i : ''),
+        avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${i + 10}&backgroundColor=b6e3f4`
+      }));
+
+      setTimeout(() => {
+        setPlayers(mockPlayers);
+        setLoading(false);
+      }, 800);
+    };
+
+    fetchServerData();
+    const interval = setInterval(() => {
+      setPlayerCount(prev => prev + (Math.random() > 0.5 ? 1 : -1));
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section id="server" className="py-32 px-6 md:px-16 bg-bg-light dark:bg-bg-dark border-t border-black/5 dark:border-white/5 scroll-mt-20">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col lg:flex-row justify-between items-end mb-20 gap-8">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.3em] font-black text-primary mb-4 block">Telemetría en tiempo real</span>
+              <h2 className="hero-title text-7xl md:text-9xl font-black lowercase dark:text-white">
+              estado<br/>del servidor
+            </h2>
+          </div>
+          <div className="flex gap-4 md:gap-8 bg-black dark:bg-white p-2 rounded-[2rem]">
+            <div className="px-8 py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
+              <span className="text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Jugadores</span>
+              <span className="text-4xl font-display font-black text-primary">{playerCount}/100</span>
+            </div>
+            <div className="px-8 py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
+              <span className="text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Tiempo activo</span>
+              <span className="text-4xl font-display font-black text-white dark:text-black">{uptime}</span>
+              </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1 bg-white dark:bg-stone-gray/10 p-8 rounded-[3rem] border border-black/5 dark:border-white/5 flex flex-col justify-between">
+            <div>
+              <h4 className="text-2xl font-black mb-4">Información principal</h4>
+              <ul className="space-y-4 text-sm font-medium opacity-60">
+                <li className="flex justify-between"><span>Versión</span> <span>1.20.1 Forge</span></li>
+                <li className="flex justify-between"><span>Región</span> <span>Europa (Madrid)</span></li>
+                <li className="flex justify-between"><span>Latencia</span> <span>12ms</span></li>
+                <li className="flex justify-between"><span>Dificultad</span> <span>Hardcore</span></li>
+              </ul>
+            </div>
+            <div className="mt-12 pt-8 border-t border-black/5 dark:border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+                <span className="text-[10px] uppercase font-black tracking-widest">Nodo maestro: Activo</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-3 bg-white dark:bg-stone-gray/10 p-8 rounded-[3rem] border border-black/5 dark:border-white/5 overflow-hidden">
+            <h4 className="text-2xl font-black mb-8">Supervivientes activos</h4>
+            {loading ? (
+              <div className="grid grid-cols-4 md:grid-cols-8 gap-4 animate-pulse">
+                {[...Array(16)].map((_, i) => (
+                  <div key={i} className="aspect-square bg-black/5 dark:bg-white/5 rounded-2xl"></div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-4 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
+                {players.map((player) => (
+                  <div key={player.id} className="group relative flex flex-col items-center gap-2">
+                    <div className="w-full aspect-square bg-bg-light dark:bg-bg-dark rounded-2xl border border-black/5 dark:border-white/5 p-2 group-hover:bg-primary transition-all duration-300">
+                      <img src={player.avatar} alt={player.name} className="w-full h-full object-contain" />
+                    </div>
+                    <span className="text-[9px] font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-4 bg-black text-white px-2 py-0.5 rounded whitespace-nowrap z-10">
+                      {player.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ServerStatus;

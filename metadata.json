@@ -1,0 +1,8 @@
+{
+  "name": "GitanoMongoloMon Server",
+  "description": "A brutalist Minecraft modpack landing page featuring real-time server stats, mod information, and an interactive AI survival guide.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
