@@ -42,7 +42,7 @@ const InstallSection: React.FC = () => {
             <h4 className="text-2xl font-bold mb-3">Descargar el paquete</h4>
             <p className="text-white/60 text-lg leading-relaxed mb-4">Descarga el archivo .zip optimizado que contiene todos los mods y configuraciones.</p>
             <a
-              href="https://github.com/PabloMego/ModsMon/releases/download/Mods/GitanoMongoloMon-1.0.0.zip"
+              href="https://github.com/PabloMego/ModsMon/releases/download/1.0.1/GitanoMongoloMon-1.0.1.zip"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-4 px-6 py-3 bg-primary text-black font-black rounded-2xl hover:scale-105 transition-transform"
