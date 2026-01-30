@@ -14,10 +14,11 @@ const ServerStatus: React.FC = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [online, setOnline] = useState<boolean | null>(null);
+  const SERVER_HOST = (import.meta as any).env?.VITE_SERVER_HOST || '23.88.73.21:26211';
 
   // Simulate fetching data from a real-time server API
   useEffect(() => {
-    const SERVER_HOST = (import.meta as any).env?.VITE_SERVER_HOST || '';
+    // use outer SERVER_HOST (falls back to the provided IP)
 
     const fetchServerData = async () => {
       if (!SERVER_HOST) {
@@ -113,7 +114,7 @@ const ServerStatus: React.FC = () => {
             <div className="mt-12 pt-8 border-t border-black/5 dark:border-white/5">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-[10px] uppercase font-black tracking-widest">Host: HolyHosting</span>
+                <span className="text-xl uppercase font-black tracking-widest">IP: {SERVER_HOST}</span>
               </div>
             </div>
           </div>
