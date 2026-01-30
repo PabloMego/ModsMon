@@ -16,6 +16,7 @@ const TicketsAdmin: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [authenticated, setAuthenticated] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState('');
+  const [filter, setFilter] = useState<'all'|'open'|'resolved'|'archived'>('all');
   const ADMIN_PASS = (import.meta as any).env?.VITE_ADMIN_PASSWORD || '';
   const STORAGE_KEY = 'gmm_admin_auth';
 
@@ -97,10 +98,9 @@ const TicketsAdmin: React.FC = () => {
     );
   }
 
-  const [filter, setFilter] = useState<'all'|'open'|'resolved'|'archived'>('all');
-
   const filtered = tickets.filter(t => {
-    if (filter === 'all') return true;
+    // 'Todos' ahora excluye los archivados para mayor claridad
+    if (filter === 'all') return t.status !== 'archived';
     if (filter === 'open') return t.status === 'open';
     if (filter === 'resolved') return t.status === 'resolved';
     if (filter === 'archived') return t.status === 'archived';
@@ -126,26 +126,29 @@ const TicketsAdmin: React.FC = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filtered.map(t => (
-            <div key={t.id} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/50 dark:bg-gray-900 flex flex-col justify-between gap-4">
-              <div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-sm opacity-60">{new Date(t.created_at).toLocaleString()}</div>
-                    <div className="font-black text-lg">{t.discord_tag}</div>
-                    <div className="text-xs opacity-60">{t.category}</div>
+            <div key={t.id} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/50 dark:bg-gray-900 flex flex-col justify-between gap-4 shadow-sm">
+              <div className="flex gap-4">
+                <div className={`w-1 rounded-full ${t.status === 'open' ? 'bg-green-500' : t.status === 'resolved' ? 'bg-blue-500' : 'bg-gray-500'}`}></div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-sm opacity-60">{new Date(t.created_at).toLocaleString()}</div>
+                      <div className="font-black text-lg">{t.discord_tag}</div>
+                      <div className="inline-block mt-1 text-xs px-3 py-1 rounded-full bg-black/5 dark:bg-white/5 text-black/70">{t.category}</div>
+                    </div>
+                    <div className={`text-xs font-black px-3 py-1 rounded-full ${t.status === 'open' ? 'bg-green-100 text-green-800' : t.status === 'resolved' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>{t.status}</div>
                   </div>
-                  <div className="text-xs font-black px-3 py-1 rounded-full {t.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">{t.status}</div>
+                  <div className="mt-3 text-sm opacity-80 whitespace-pre-wrap p-3 bg-black/5 dark:bg-white/5 rounded-md">{t.description}</div>
+                  {t.attachment_urls && t.attachment_urls.length > 0 && (
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {t.attachment_urls.map((url, i) => (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                          <img src={url} alt={`attachment-${i}`} className="w-full h-32 object-cover rounded-md border" />
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div className="mt-3 text-sm opacity-80 whitespace-pre-wrap">{t.description}</div>
-                {t.attachment_urls && t.attachment_urls.length > 0 && (
-                  <div className="mt-3 grid grid-cols-2 gap-2">
-                    {t.attachment_urls.map((url, i) => (
-                      <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                        <img src={url} alt={`attachment-${i}`} className="w-full h-32 object-cover rounded-md border" />
-                      </a>
-                    ))}
-                  </div>
-                )}
               </div>
               <div className="flex items-center justify-end gap-2">
                 {t.status !== 'resolved' && t.status !== 'archived' && (
