@@ -7,6 +7,7 @@ import ModSection from './components/ModSection';
 import InstallSection from './components/InstallSection';
 import ServerStatus from './components/ServerStatus';
 import TicketsSection from './components/TicketsSection';
+import TicketsAdmin from './components/Admin/TicketsAdmin';
 import Footer from './components/Footer';
 import ChatOverlay from './components/ChatOverlay';
 import AllMods from './components/AllMods';
@@ -32,7 +33,9 @@ const App: React.FC = () => {
       <Navbar toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
 
       <main className="pt-24">
-        {path === '/mods' ? (
+        {path === '/admin' ? (
+          <TicketsAdmin />
+        ) : path === '/mods' ? (
           <AllMods />
         ) : (
           <>

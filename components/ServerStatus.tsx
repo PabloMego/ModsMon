@@ -8,33 +8,71 @@ interface Player {
 }
 
 const ServerStatus: React.FC = () => {
-  const [playerCount, setPlayerCount] = useState(24);
-  const [uptime, setUptime] = useState('12d 04h 32m');
+  const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const [maxPlayers, setMaxPlayers] = useState<number | null>(null);
+  const [version, setVersion] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
+  const [online, setOnline] = useState<boolean | null>(null);
 
   // Simulate fetching data from a real-time server API
   useEffect(() => {
-    const fetchServerData = () => {
-      // Mocking the player list
-      const mockNames = ['Steve', 'Alex', 'Herobrine', 'Notch', 'Techno', 'Dream', 'Mon', 'Gitano', 'Mongolo', 'CreeperHunter', 'RedstoneKing', 'Miner49er'];
-      const mockPlayers = Array.from({ length: 24 }).map((_, i) => ({
-        id: Math.random().toString(36).substr(2, 9),
-        name: mockNames[i % mockNames.length] + (i > 10 ? i : ''),
-        avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${i + 10}&backgroundColor=b6e3f4`
-      }));
+    const SERVER_HOST = (import.meta as any).env?.VITE_SERVER_HOST || '';
 
-      setTimeout(() => {
+    const fetchServerData = async () => {
+      if (!SERVER_HOST) {
+        // Keep a mocked state when no host is provided
+        const mockNames = ['Steve', 'Alex', 'Herobrine', 'Notch', 'Techno', 'Dream', 'Mon', 'Gitano', 'Mongolo'];
+        const mockPlayers = Array.from({ length: 12 }).map((_, i) => ({
+          id: Math.random().toString(36).substr(2, 9),
+          name: mockNames[i % mockNames.length] + (i > 6 ? i : ''),
+          avatar: `https://api.dicebear.com/7.x/pixel-art/svg?seed=${i + 10}&backgroundColor=b6e3f4`
+        }));
+
         setPlayers(mockPlayers);
+        setPlayerCount(mockPlayers.length);
+        setMaxPlayers(100);
+        setOnline(true);
         setLoading(false);
-      }, 800);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const res = await fetch(`https://api.mcsrvstat.us/2/${encodeURIComponent(SERVER_HOST)}`);
+        const data = await res.json();
+
+        setOnline(Boolean(data.online));
+        setVersion(data.version ?? data.software ?? null);
+        if (data.online) {
+          setPlayerCount(data.players?.online ?? 0);
+          setMaxPlayers(data.players?.max ?? null);
+
+          const list = (data.players?.list || []).slice(0, 100).map((name: string, i: number) => ({
+            id: `${i}-${name}`,
+            name,
+            // Use Minotar helm endpoint to fetch the head/face of the skin (better for faces)
+            avatar: `https://minotar.net/helm/${encodeURIComponent(name)}/100.png`
+          }));
+          setPlayers(list);
+
+        } else {
+          setPlayerCount(0);
+          setMaxPlayers(null);
+          setPlayers([]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch server status', err);
+        setOnline(false);
+        setPlayerCount(null);
+        setPlayers([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchServerData();
-    const interval = setInterval(() => {
-      setPlayerCount(prev => prev + (Math.random() > 0.5 ? 1 : -1));
-    }, 10000);
-
+    const interval = setInterval(fetchServerData, 15000);
     return () => clearInterval(interval);
   }, []);
 
@@ -48,14 +86,16 @@ const ServerStatus: React.FC = () => {
               estado<br/>del servidor
             </h2>
           </div>
-          <div className="flex gap-4 md:gap-8 bg-black dark:bg-white p-2 rounded-[2rem]">
+            <div className="flex gap-4 md:gap-8 bg-black dark:bg-white p-2 rounded-[2rem] items-center">
             <div className="px-8 py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
               <span className="text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Jugadores</span>
-              <span className="text-4xl font-display font-black text-primary">{playerCount}/100</span>
+              <span className={`text-4xl font-display font-black ${online ? 'text-primary' : 'text-red-400'}`}>
+                {loading ? '—' : online ? `${playerCount ?? 0}/${maxPlayers ?? '—'}` : 'Offline'}
+              </span>
             </div>
-            <div className="px-8 py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
-              <span className="text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Tiempo activo</span>
-              <span className="text-4xl font-display font-black text-white dark:text-black">{uptime}</span>
+              <div className="flex items-center gap-3 px-4">
+                <div className={`w-3 h-3 rounded-full ${online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                <div className="text-sm font-black uppercase text-white/90">{online ? 'En línea' : online === false ? 'Desconectado' : '—'}</div>
               </div>
           </div>
         </div>
@@ -65,22 +105,21 @@ const ServerStatus: React.FC = () => {
             <div>
               <h4 className="text-2xl font-black mb-4">Información principal</h4>
               <ul className="space-y-4 text-sm font-medium opacity-60">
-                <li className="flex justify-between"><span>Versión</span> <span>1.20.1 Forge</span></li>
-                <li className="flex justify-between"><span>Región</span> <span>Europa (Madrid)</span></li>
-                <li className="flex justify-between"><span>Latencia</span> <span>12ms</span></li>
-                <li className="flex justify-between"><span>Dificultad</span> <span>Hardcore</span></li>
+                <li className="flex justify-between"><span>Versión</span> <span>{version ?? '—'}</span></li>
+                <li className="flex justify-between"><span>Región</span> <span>Europa</span></li>
+                <li className="flex justify-between"><span>Dificultad</span> <span>Difícil</span></li>
               </ul>
             </div>
             <div className="mt-12 pt-8 border-t border-black/5 dark:border-white/5">
               <div className="flex items-center gap-3">
                 <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                <span className="text-[10px] uppercase font-black tracking-widest">Nodo maestro: Activo</span>
+                <span className="text-[10px] uppercase font-black tracking-widest">Host: HolyHosting</span>
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 bg-white dark:bg-stone-gray/10 p-8 rounded-[3rem] border border-black/5 dark:border-white/5 overflow-hidden">
-            <h4 className="text-2xl font-black mb-8">Supervivientes activos</h4>
+            <h4 className="text-2xl font-black mb-8">Usuarios activos</h4>
             {loading ? (
               <div className="grid grid-cols-4 md:grid-cols-8 gap-4 animate-pulse">
                 {[...Array(16)].map((_, i) => (
@@ -90,12 +129,31 @@ const ServerStatus: React.FC = () => {
             ) : (
               <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-4 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
                 {players.map((player) => (
-                  <div key={player.id} className="group relative flex flex-col items-center gap-2">
-                    <div className="w-full aspect-square bg-bg-light dark:bg-bg-dark rounded-2xl border border-black/5 dark:border-white/5 p-2 group-hover:bg-primary transition-all duration-300">
-                      <img src={player.avatar} alt={player.name} className="w-full h-full object-contain" />
+                  <div key={player.id} className="flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 rounded-2xl border border-black/5 dark:border-white/5 p-1 bg-bg-light dark:bg-bg-dark flex items-center justify-center">
+                      <img
+                        src={player.avatar}
+                        alt={player.name || 'avatar'}
+                        title={player.name || 'Anónimo'}
+                        className="w-full h-full object-cover rounded-lg"
+                        onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+                          const img = e.currentTarget;
+                          const src = img.src || '';
+                          // fallback chain: helm -> avatar -> dicebear
+                          if (src.includes('/helm/')) {
+                            img.src = `https://minotar.net/avatar/${encodeURIComponent(player.name || 'anon')}/100.png`;
+                            return;
+                          }
+                          if (src.includes('/avatar/')) {
+                            img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(player.name || 'anon')}&backgroundColor=b6e3f4`;
+                            return;
+                          }
+                          img.src = `https://api.dicebear.com/7.x/pixel-art/svg?seed=${encodeURIComponent(player.name || 'anon')}&backgroundColor=b6e3f4`;
+                        }}
+                      />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-4 bg-black text-white px-2 py-0.5 rounded whitespace-nowrap z-10">
-                      {player.name}
+                    <span className="text-sm font-black text-center text-black dark:text-white break-words max-w-[12rem]" title={player.name || 'Anónimo'}>
+                      {player.name || 'Anónimo'}
                     </span>
                   </div>
                 ))}

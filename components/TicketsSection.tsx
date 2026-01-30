@@ -1,18 +1,31 @@
 
 import React, { useState } from 'react';
+import { supabase } from '../services/supabase';
 
 const TicketsSection: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [category, setCategory] = useState('bug');
+  const [discordTag, setDiscordTag] = useState('');
+  const [description, setDescription] = useState('');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Simular envío de ticket
-    setTimeout(() => {
-      setLoading(false);
+    setErrorMsg(null);
+
+    try {
+      const { data, error } = await supabase.from('tickets').insert([{ category, discord_tag: discordTag, description, status: 'open' }]);
+      if (error) throw error;
       setSubmitted(true);
-    }, 1500);
+    } catch (err: any) {
+      console.error('Ticket submit error', err);
+      setErrorMsg(err.message || 'Error al enviar ticket');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,7 +66,7 @@ const TicketsSection: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="group">
                   <label className="text-[10px] font-black uppercase tracking-widest mb-3 block opacity-40 group-focus-within:opacity-100 transition-opacity">Categoría</label>
-                  <select required className="w-full bg-black/5 dark:bg-white/5 border-2 border-transparent focus:border-primary rounded-3xl px-8 py-6 text-lg font-bold outline-none appearance-none cursor-pointer dark:text-white">
+                  <select required value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black/5 dark:bg-white/5 border-2 border-transparent focus:border-primary rounded-3xl px-8 py-6 text-lg font-bold outline-none appearance-none cursor-pointer dark:text-white">
                     <option value="bug">Reportar Bug</option>
                     <option value="mod">Sugerencia de Mod</option>
                     <option value="player">Reportar Jugador</option>
@@ -66,6 +79,8 @@ const TicketsSection: React.FC = () => {
                   <input 
                     required 
                     type="text" 
+                    value={discordTag}
+                    onChange={(e) => setDiscordTag(e.target.value)}
                     placeholder="ej: steve#0001"
                     className="w-full bg-black/5 dark:bg-white/5 border-2 border-transparent focus:border-primary rounded-3xl px-8 py-6 text-lg font-bold outline-none dark:text-white"
                   />
@@ -76,10 +91,16 @@ const TicketsSection: React.FC = () => {
                   <textarea 
                     required 
                     rows={5}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe los detalles aquí..."
                     className="w-full bg-black/5 dark:bg-white/5 border-2 border-transparent focus:border-primary rounded-[2.5rem] px-8 py-6 text-lg font-bold outline-none resize-none dark:text-white"
                   />
                 </div>
+
+                {errorMsg && (
+                  <div className="text-sm text-red-600">{errorMsg}</div>
+                )}
 
                 <button 
                   type="submit" 
