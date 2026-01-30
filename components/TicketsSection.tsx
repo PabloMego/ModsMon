@@ -10,6 +10,7 @@ const TicketsSection: React.FC = () => {
   const [discordTag, setDiscordTag] = useState('');
   const [description, setDescription] = useState('');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[] | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +18,23 @@ const TicketsSection: React.FC = () => {
     setErrorMsg(null);
 
     try {
-      const { data, error } = await supabase.from('tickets').insert([{ category, discord_tag: discordTag, description, status: 'open' }]);
+      const attachment_urls: string[] = [];
+      if (files && files.length > 0) {
+        for (const f of files) {
+          const fileExt = f.name.split('.').pop();
+          const fileName = `ticket_${Date.now()}_${Math.random().toString(36).slice(2,8)}.${fileExt}`;
+          const { error: upError } = await supabase.storage.from('ticket-attachments').upload(fileName, f, { cacheControl: '3600', upsert: false });
+          if (upError) throw upError;
+          const { data: publicData } = supabase.storage.from('ticket-attachments').getPublicUrl(fileName) as any;
+          const url = publicData?.publicUrl || publicData?.public_url || null;
+          if (url) attachment_urls.push(url);
+        }
+      }
+
+      const payload: any = { category, discord_tag: discordTag, description, status: 'open' };
+      if (attachment_urls.length > 0) payload.attachment_urls = attachment_urls;
+
+      const { data, error } = await supabase.from('tickets').insert([payload]);
       if (error) throw error;
       setSubmitted(true);
     } catch (err: any) {
@@ -96,6 +113,11 @@ const TicketsSection: React.FC = () => {
                     placeholder="Describe los detalles aquí..."
                     className="w-full bg-black/5 dark:bg-white/5 border-2 border-transparent focus:border-primary rounded-[2.5rem] px-8 py-6 text-lg font-bold outline-none resize-none dark:text-white"
                   />
+                </div>
+
+                <div className="group">
+                  <label className="text-[10px] font-black uppercase tracking-widest mb-3 block opacity-40">Adjuntar imágenes (opcional)</label>
+                  <input type="file" accept="image/*" multiple onChange={(e) => setFiles(e.target.files ? Array.from(e.target.files) : null)} className="w-full" />
                 </div>
 
                 {errorMsg && (

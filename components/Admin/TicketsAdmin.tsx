@@ -7,6 +7,7 @@ interface Ticket {
   discord_tag: string;
   description: string;
   status: string;
+  attachment_urls?: string[] | null;
   created_at: string;
 }
 
@@ -110,6 +111,15 @@ const TicketsAdmin: React.FC = () => {
                 <div className="text-sm opacity-60">{new Date(t.created_at).toLocaleString()}</div>
                 <div className="font-black text-lg">{t.discord_tag} <span className="text-xs opacity-60">• {t.category}</span></div>
                 <div className="mt-2 text-sm opacity-80 whitespace-pre-wrap">{t.description}</div>
+                {t.attachment_urls && t.attachment_urls.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    {t.attachment_urls.map((url, i) => (
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                        <img src={url} alt={`attachment-${i}`} className="w-40 h-auto rounded-md border" />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex flex-col items-end gap-2">
                 <div className={`text-xs font-black px-3 py-1 rounded-full ${t.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>{t.status}</div>
