@@ -6,9 +6,6 @@ const Footer: React.FC = () => {
     <footer className="bg-bg-light dark:bg-bg-dark py-16 px-6 md:px-16 border-t border-black/5 dark:border-white/5">
       <div className="flex flex-col md:flex-row justify-between items-center gap-12">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-            <span className="material-icons-outlined text-black scale-75">grid_view</span>
-          </div>
           <span className="font-display font-black text-2xl tracking-tighter uppercase">GitanoMongoloMon</span>
         </div>
 

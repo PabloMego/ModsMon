@@ -53,9 +53,6 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
   return (
     <nav className="fixed top-0 w-full z-50 px-6 md:px-12 py-6 flex justify-between items-center bg-bg-light/80 dark:bg-bg-dark/80 backdrop-blur-md border-b border-black/5 dark:border-white/5 transition-all">
       <a href="/" className={`flex items-center gap-2 group transition-opacity duration-200 ${menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-          <span className="material-icons-outlined text-black scale-75">grid_view</span>
-        </div>
         <span className="font-display font-black text-xl tracking-tighter uppercase">GitanoMongoloMon</span>
       </a>
 

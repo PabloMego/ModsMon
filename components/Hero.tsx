@@ -1,8 +1,65 @@
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import heroImg from '../imgs/Img_Hero.jpg';
 
 const Hero: React.FC = () => {
+  const playerRef = useRef<any>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [apiReady, setApiReady] = useState(false);
+  const [soundActive, setSoundActive] = useState(false);
+
+  useEffect(() => {
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.body.appendChild(tag);
+      (window as any).onYouTubeIframeAPIReady = () => setApiReady(true);
+    } else {
+      setApiReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiReady && containerRef.current && !playerRef.current) {
+        playerRef.current = new (window as any).YT.Player(containerRef.current, {
+        height: '100%',
+        width: '100%',
+        videoId: 'k33Hc3FNbso',
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          rel: 0,
+          controls: 1,       // show YouTube player controls (play/pause/seek)
+          modestbranding: 1,
+          playsinline: 1,
+          enablejsapi: 1,
+          iv_load_policy: 3, // disable video annotations
+          disablekb: 0,      // enable keyboard controls
+          fs: 1,             // allow fullscreen
+          loop: 1,           // loop playback
+          playlist: 'k33Hc3FNbso', // required for loop to work with single video
+        },
+        events: {
+          onReady: (e: any) => {
+            try { e.target.playVideo(); } catch (err) {}
+          }
+        }
+      });
+    }
+  }, [apiReady]);
+
+  const enableSound = () => {
+    if (playerRef.current) {
+      try {
+        playerRef.current.unMute();
+        playerRef.current.playVideo();
+        setSoundActive(true);
+      } catch (err) {}
+    }
+  };
+
   return (
+    <>
     <section id="home" className="pt-40 pb-20 px-6 md:px-16 min-h-screen flex flex-col justify-center overflow-hidden scroll-mt-20">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-7 z-10">
@@ -33,13 +90,11 @@ const Hero: React.FC = () => {
         </div>
 
         <div className="lg:col-span-5 relative mt-12 lg:mt-0">
-          <div className="relative w-full aspect-[4/5] bg-primary rounded-[3rem] md:rounded-[5rem] overflow-hidden group shadow-2xl">
-            {/* Background Shader effect simulation */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-transparent z-10"></div>
-            <img 
-              alt="Minecraft World" 
-              className="absolute inset-0 w-full h-full object-cover mix-blend-multiply opacity-60 group-hover:scale-105 transition-transform duration-1000"
-              src="https://upload.wikimedia.org/wikipedia/commons/1/10/Flag_of_the_Romani_people.svg"
+          <div className="w-full bg-transparent rounded-[3rem] md:rounded-[5rem] overflow-hidden group shadow-2xl flex justify-center items-center">
+            <img
+              alt="Minecraft World"
+              className="w-full h-auto object-contain transition-all duration-300 block"
+              src={heroImg}
             />
             
             {/* Top-right decorative circle removed */}
@@ -55,6 +110,31 @@ const Hero: React.FC = () => {
         </div>
       </div>
     </section>
+
+    {/* Video promocional debajo del hero */}
+    <section className="w-full px-6 md:px-16 py-12 bg-transparent">
+      <div className="max-w-6xl mx-auto">
+        <h3 className="text-center text-2xl md:text-3xl font-semibold mb-6 text-black/80 dark:text-white/80">Video promocional</h3>
+        <div className="relative w-full" style={{paddingBottom: '56.25%'}}>
+          {/* Contenedor para el player controlable por la API de YouTube */}
+          <div
+            ref={containerRef as any}
+            className="absolute top-0 left-0 w-full h-full rounded-xl shadow-xl overflow-hidden bg-black"
+          />
+
+          {/* Botón para activar sonido (necesario porque navegadores bloquean autoplay con audio) */}
+          {!soundActive && (
+            <button
+              onClick={enableSound}
+              className="absolute z-30 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/95 dark:bg-black/85 text-black dark:text-white px-6 py-3 rounded-full shadow-lg"
+            >
+              Reproducir con sonido
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+    </>
   );
 };
 
