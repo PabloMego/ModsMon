@@ -134,13 +134,13 @@ const ServerStatus: React.FC = () => {
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-4 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
                 {players.map((player) => (
-                  <div key={player.id} className="flex flex-col items-center gap-2">
-                    <div className="w-14 h-14 sm:w-16 md:w-20 rounded-2xl overflow-hidden p-0 bg-bg-light dark:bg-bg-dark flex items-center justify-center">
+                  <div key={player.id} className="flex flex-col items-center gap-2 min-w-0 px-1">
+                    <div className="w-14 h-14 sm:w-16 md:w-20 rounded-2xl overflow-hidden p-0 bg-transparent flex items-center justify-center">
                       <img
                         src={player.avatar}
                         alt={player.name || 'avatar'}
                         title={player.name || 'Anónimo'}
-                        className="w-full h-full object-contain object-center block rounded-2xl border border-black/5 dark:border-white/5"
+                        className="w-full h-full object-contain object-center block"
                         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                           const img = e.currentTarget;
                           const src = img.src || '';
@@ -157,7 +157,7 @@ const ServerStatus: React.FC = () => {
                         }}
                       />
                     </div>
-                    <span className="text-xs sm:text-sm font-black text-center text-black dark:text-white break-words max-w-[10rem]" title={player.name || 'Anónimo'}>
+                    <span className="text-xs sm:text-sm font-black text-center text-black dark:text-white w-full break-words whitespace-normal" title={player.name || 'Anónimo'}>
                       {player.name || 'Anónimo'}
                     </span>
                   </div>
