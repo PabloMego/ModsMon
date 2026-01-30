@@ -124,9 +124,9 @@ const TicketsAdmin: React.FC = () => {
       {loading ? (
         <div>Cargando...</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
           {filtered.map(t => (
-            <div key={t.id} className="p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/50 dark:bg-gray-900 flex flex-col justify-between gap-4 shadow-sm">
+            <div key={t.id} className="w-full p-4 rounded-xl border border-black/5 dark:border-white/5 bg-white/50 dark:bg-gray-900 flex flex-col justify-between gap-4 shadow-sm">
               <div className="flex gap-4">
                 <div className={`w-1 rounded-full ${t.status === 'open' ? 'bg-green-500' : t.status === 'resolved' ? 'bg-blue-500' : 'bg-gray-500'}`}></div>
                 <div className="flex-1">
