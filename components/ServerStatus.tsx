@@ -122,21 +122,25 @@ const ServerStatus: React.FC = () => {
           <div className="lg:col-span-3 bg-white dark:bg-stone-gray/10 p-8 rounded-[3rem] border border-black/5 dark:border-white/5 overflow-hidden">
             <h4 className="text-2xl font-black mb-8">Usuarios activos</h4>
             {loading ? (
-              <div className="grid grid-cols-4 md:grid-cols-8 gap-4 animate-pulse">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 animate-pulse">
                 {[...Array(16)].map((_, i) => (
                   <div key={i} className="aspect-square bg-black/5 dark:bg-white/5 rounded-2xl"></div>
                 ))}
               </div>
+            ) : players.length === 0 ? (
+              <div className="flex items-center justify-center h-40 text-center text-sm opacity-70">
+                No hay jugadores
+              </div>
             ) : (
-              <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-10 gap-4 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-10 gap-4 max-h-[400px] overflow-y-auto pr-4 no-scrollbar">
                 {players.map((player) => (
                   <div key={player.id} className="flex flex-col items-center gap-2">
-                    <div className="w-20 h-20 rounded-2xl border border-black/5 dark:border-white/5 p-1 bg-bg-light dark:bg-bg-dark flex items-center justify-center">
+                    <div className="w-14 h-14 sm:w-16 md:w-20 rounded-2xl overflow-hidden p-0 bg-bg-light dark:bg-bg-dark flex items-center justify-center">
                       <img
                         src={player.avatar}
                         alt={player.name || 'avatar'}
                         title={player.name || 'Anónimo'}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-contain object-center block rounded-2xl border border-black/5 dark:border-white/5"
                         onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
                           const img = e.currentTarget;
                           const src = img.src || '';
@@ -153,7 +157,7 @@ const ServerStatus: React.FC = () => {
                         }}
                       />
                     </div>
-                    <span className="text-sm font-black text-center text-black dark:text-white break-words max-w-[12rem]" title={player.name || 'Anónimo'}>
+                    <span className="text-xs sm:text-sm font-black text-center text-black dark:text-white break-words max-w-[10rem]" title={player.name || 'Anónimo'}>
                       {player.name || 'Anónimo'}
                     </span>
                   </div>
