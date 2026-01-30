@@ -58,9 +58,10 @@ const App: React.FC = () => {
           if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }}
         aria-label="Abrir ticket"
-        className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-primary text-black rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group"
+        className="fixed bottom-6 sm:bottom-8 right-4 sm:right-8 z-50 bg-primary text-black rounded-full shadow-2xl flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-3 hover:scale-110 active:scale-95 transition-all group"
       >
-        <span className="material-icons-outlined text-3xl group-hover:rotate-12 transition-transform">task_alt</span>
+        <span className="material-icons-outlined text-2xl">task_alt</span>
+        <span className="font-black uppercase text-sm hidden sm:inline-block">Abrir ticket</span>
       </button>
 
       {showChat && <ChatOverlay onClose={() => setShowChat(false)} />}

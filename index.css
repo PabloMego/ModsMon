@@ -1,0 +1,21 @@
+/* Minimal defaults to complement Tailwind CDN config */
+:root {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root { height: 100%; }
+
+img { max-width: 100%; height: auto; display: block; }
+
+/* Utility for hiding scrollbars on non-mobile where used */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Small tweaks for mobile tap targets */
+button, a { touch-action: manipulation; }
+
+/* Ensure hero title scales nicely on very small screens */
+@media (max-width: 420px) {
+  .hero-title { font-size: 18vw; }
+}

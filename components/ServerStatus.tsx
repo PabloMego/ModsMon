@@ -87,18 +87,18 @@ const ServerStatus: React.FC = () => {
               estado<br/>del servidor
             </h2>
           </div>
-            <div className="flex gap-4 md:gap-8 bg-black dark:bg-white p-2 rounded-[2rem] items-center">
-            <div className="px-8 py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
-              <span className="text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Jugadores</span>
-              <span className={`text-4xl font-display font-black ${online ? 'text-primary' : 'text-red-400'}`}>
-                {loading ? '—' : online ? `${playerCount ?? 0}/${maxPlayers ?? '—'}` : 'Offline'}
-              </span>
-            </div>
-              <div className="flex items-center gap-3 px-4">
-                <div className={`w-3 h-3 rounded-full ${online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
-                <div className="text-sm font-black uppercase text-white/90">{online ? 'En línea' : online === false ? 'Desconectado' : '—'}</div>
+            <div className="w-full flex items-center justify-between gap-4 md:gap-8 bg-black dark:bg-white p-4 md:p-2 rounded-[2rem]">
+              <div className="flex-1 px-6 py-6 md:px-8 md:py-6 rounded-[1.5rem] bg-stone-gray/10 dark:bg-black/5 flex flex-col justify-center">
+                <span className="text-sm md:text-[10px] uppercase font-black opacity-40 text-white dark:text-black">Jugadores</span>
+                <span className={`text-5xl md:text-6xl font-display font-black ${online ? 'text-primary' : 'text-red-400'}`}>
+                  {loading ? '—' : online ? `${playerCount ?? 0}/${maxPlayers ?? '—'}` : 'Offline'}
+                </span>
               </div>
-          </div>
+              <div className="flex items-center gap-3 px-4">
+                <div className={`w-4 h-4 rounded-full ${online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                <div className="text-base md:text-sm font-black uppercase text-white/90">{online ? 'En línea' : online === false ? 'Desconectado' : '—'}</div>
+              </div>
+            </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">

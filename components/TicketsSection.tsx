@@ -50,9 +50,9 @@ const TicketsSection: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
           
-          <div className="sticky top-32">
+          <div className="lg:sticky lg:top-32">
             <span className="text-[10px] uppercase tracking-[0.3em] font-black text-primary mb-4 block">Central de Soporte</span>
-            <h2 className="hero-title text-7xl md:text-[8vw] font-black lowercase dark:text-white mb-12">
+            <h2 className="hero-title text-5xl md:text-7xl lg:text-[8vw] font-black lowercase dark:text-white mb-12">
               abrir<br/>ticket
             </h2>
             <p className="text-xl text-black/50 dark:text-white/40 max-w-sm leading-relaxed mb-8">
