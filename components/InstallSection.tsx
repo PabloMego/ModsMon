@@ -1,5 +1,8 @@
 
 import React from 'react';
+import Paso3 from '../imgs/Paso_3.png';
+import Paso4 from '../imgs/Paso_4.png';
+import Paso5 from '../imgs/Paso_5.png';
 
 const InstallSection: React.FC = () => {
   return (
@@ -49,21 +52,21 @@ const InstallSection: React.FC = () => {
           </div>
 
           <div className="group bg-white/5 p-6 rounded-3xl hover:bg-white/6 transition-colors">
-            <img src="/imgs/Paso_3.png" alt="Paso 3 - Importar" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
+            <img src={Paso3} alt="Paso 3 - Importar" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
             <span className="inline-block px-4 py-1.5 bg-white text-black text-[10px] font-black rounded-full mb-4">PASO 3</span>
             <h4 className="text-2xl font-bold mb-3">Abrir CurseForge y darle a Import</h4>
             <p className="text-white/60 text-lg leading-relaxed">Abre CurseForge y selecciona la opción "Importar" para añadir un modpack desde un archivo .zip.</p>
           </div>
 
           <div className="group bg-white/5 p-6 rounded-3xl hover:bg-white/6 transition-colors">
-            <img src="/imgs/Paso_4.png" alt="Paso 4 - Choose ZIP" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
+            <img src={Paso4} alt="Paso 4 - Choose ZIP" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
             <span className="inline-block px-4 py-1.5 bg-white text-black text-[10px] font-black rounded-full mb-4">PASO 4</span>
             <h4 className="text-2xl font-bold mb-3">Elegir archivo .zip y esperar</h4>
             <p className="text-white/60 text-lg leading-relaxed">Selecciona el archivo .zip descargado y espera a que CurseForge instale todos los mods y dependencias.</p>
           </div>
 
           <div className="group bg-white/5 p-6 rounded-3xl hover:bg-white/6 transition-colors">
-            <img src="/imgs/Paso_5.png" alt="Paso 5 - Play" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
+            <img src={Paso5} alt="Paso 5 - Play" className="w-full h-80 md:h-72 object-cover rounded-2xl mb-6" />
             <span className="inline-block px-4 py-1.5 bg-white text-black text-[10px] font-black rounded-full mb-4">PASO 5</span>
             <h4 className="text-2xl font-bold mb-3">Dale a Play</h4>
             <p className="text-white/60 text-lg leading-relaxed">Inicia el perfil importado y pulsa "Play" para ejecutar el juego con el modpack instalado.</p>
