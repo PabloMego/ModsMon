@@ -71,18 +71,18 @@ const UpdateBanner: React.FC<Props> = ({ latest }) => {
   if (!visible) return null;
 
   return (
-    <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-primary to-indigo-400 text-black px-4 py-3 rounded-lg shadow-xl flex items-center gap-4 max-w-4xl w-[calc(100%_-_2rem)] sm:w-auto">
-      <div className="flex flex-col">
-        <span className="font-bold">Nueva actualización</span>
-        <span className="text-xs opacity-80 truncate max-w-[40ch]">{title}</span>
+    <div className="fixed top-20 sm:top-16 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-primary to-indigo-400 text-black px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-xl flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 max-w-4xl w-[calc(100%_-_1rem)] sm:w-auto">
+      <div className="flex flex-col flex-1 min-w-0">
+        <span className="font-bold text-sm sm:text-base">Nueva actualización</span>
+        <span className="text-xs opacity-80 truncate max-w-full sm:max-w-[40ch]">{title}</span>
       </div>
 
-      <div className="ml-4 flex items-center gap-2">
-        <a href={postUrl} className="bg-black/10 hover:bg-black/20 text-black px-3 py-1 rounded-md font-semibold">Ver actualización</a>
+      <div className="w-full sm:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:ml-4">
+        <a href={postUrl} className="w-full sm:w-auto bg-black/10 hover:bg-black/20 text-black px-3 py-2 sm:px-3 sm:py-1 rounded-md font-semibold text-center">Ver actualización</a>
         <button
           onClick={handleDownload}
           disabled={!hasFile || loading}
-          className={`px-3 py-1 rounded-md font-semibold transition-all ${
+          className={`w-full sm:w-auto px-3 py-2 sm:px-3 sm:py-1 rounded-md font-semibold transition-all ${
             hasFile ? 'bg-white/90 hover:scale-105' : 'bg-white/20 opacity-50 pointer-events-none'
           }`}
         >
@@ -91,7 +91,7 @@ const UpdateBanner: React.FC<Props> = ({ latest }) => {
         <button
           onClick={() => setVisible(false)}
           aria-label="Cerrar aviso"
-          className="ml-2 text-sm leading-none p-1 rounded-md bg-black/10 hover:bg-black/20"
+          className="mt-0 sm:ml-2 text-sm leading-none p-1 rounded-md bg-black/10 hover:bg-black/20"
         >
           ✕
         </button>
