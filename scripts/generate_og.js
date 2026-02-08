@@ -53,6 +53,7 @@ import fetch from 'node-fetch';
         else image = post.image_url.startsWith('/') ? post.image_url : `/${post.image_url}`;
       }
 
+      const absolutePostUrl = SITE_ORIGIN ? SITE_ORIGIN.replace(/\/+$/,'') + postUrl : postUrl;
       const html = `<!doctype html>
 <html>
 <head>
@@ -61,13 +62,18 @@ import fetch from 'node-fetch';
   <meta property="og:title" content="${title}" />
   <meta property="og:description" content="${description}" />
   <meta property="og:image" content="${image}" />
-  <meta property="og:url" content="${SITE_ORIGIN ? SITE_ORIGIN.replace(/\/+$/,'') + postUrl : postUrl}" />
+  <meta property="og:url" content="${absolutePostUrl}" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="canonical" href="${postUrl}" />
+  <link rel="canonical" href="${absolutePostUrl}" />
+  <meta http-equiv="refresh" content="0;url=${postUrl}" />
+  <script>window.location.replace('${postUrl}');</script>
   <title>${title}</title>
 </head>
 <body>
   Redirecting to <a href="${postUrl}">${postUrl}</a>
+  <noscript>
+    If you are not redirected automatically, follow this <a href="${postUrl}">link to the post</a>.
+  </noscript>
 </body>
 </html>`;
 
