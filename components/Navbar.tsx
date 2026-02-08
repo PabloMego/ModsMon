@@ -62,6 +62,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
         <a href="/#install" className="hover:text-primary transition-colors">Instalación</a>
         <a href="/#server" className="hover:text-primary transition-colors">Servidor</a>
         <a href="/#tickets" className="hover:text-primary transition-colors">Tickets</a>
+        <a href="/updates" className="hover:text-primary transition-colors">Actualizaciones</a>
       </div>
 
       {/* Mobile menu button */}
@@ -112,6 +113,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleTheme, isDarkMode }) => {
             <a href="/#install" onClick={() => setMenuOpen(false)} className="hover:text-primary">Instalación</a>
             <a href="/#server" onClick={() => setMenuOpen(false)} className="hover:text-primary">Servidor</a>
             <a href="/#tickets" onClick={() => setMenuOpen(false)} className="hover:text-primary">Tickets</a>
+            <a href="/updates" onClick={() => setMenuOpen(false)} className="hover:text-primary">Actualizaciones</a>
           </nav>
         </div>,
         document.body

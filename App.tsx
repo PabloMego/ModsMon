@@ -8,6 +8,11 @@ import InstallSection from './components/InstallSection';
 import ServerStatus from './components/ServerStatus';
 import TicketsSection from './components/TicketsSection';
 import TicketsAdmin from './components/Admin/TicketsAdmin';
+import UpdatesAdmin from './components/Admin/UpdatesAdmin';
+import Updates from './components/Updates';
+import UpdatePage from './components/UpdatePage';
+import { supabase } from './services/supabase';
+import UpdateBanner from './components/UpdateBanner';
 import Footer from './components/Footer';
 import ChatOverlay from './components/ChatOverlay';
 import AllMods from './components/AllMods';
@@ -28,6 +33,58 @@ const App: React.FC = () => {
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   const path = typeof window !== 'undefined' ? window.location.pathname : '/';
+
+  const [latestUpdate, setLatestUpdate] = useState<any | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkLatest = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('updates')
+          .select('*')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (error) return;
+        if (!data) {
+          if (mounted) setLatestUpdate(null);
+          return;
+        }
+        const created = new Date((data as any).created_at);
+        const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+        if (mounted && created.getTime() >= threeDaysAgo) {
+          if (mounted) setLatestUpdate(data);
+        } else if (mounted) {
+          setLatestUpdate(null);
+        }
+      } catch (e) {
+        if (mounted) setLatestUpdate(null);
+      }
+    };
+
+    checkLatest();
+    const interval = setInterval(checkLatest, 60_000);
+
+    // Try to subscribe to realtime updates for faster refresh.
+    let unsub: any = null;
+    try {
+      if ((supabase as any).channel) {
+        const chan = (supabase as any).channel('public:updates').on('postgres_changes', { event: '*', schema: 'public', table: 'updates' }, () => {
+          checkLatest();
+        }).subscribe();
+        unsub = () => { try { (supabase as any).removeChannel(chan); } catch (e) {} };
+      } else if ((supabase as any).from) {
+        const sub = (supabase as any).from('updates').on('*', () => { checkLatest(); }).subscribe();
+        unsub = () => { try { sub.unsubscribe(); } catch (e) {} };
+      }
+    } catch (e) {
+      unsub = null;
+    }
+
+    return () => { mounted = false; clearInterval(interval); if (unsub) unsub(); };
+  }, []);
 
   useEffect(() => {
     const checkAtBottom = () => {
@@ -57,10 +114,19 @@ const App: React.FC = () => {
       <main className="pt-24">
         {path === '/admin' ? (
           <TicketsAdmin />
+        ) : path === '/admin/updates' ? (
+          <UpdatesAdmin />
+        ) : path === '/updates' ? (
+          <Updates />
+        ) : path.startsWith('/updates/') ? (
+          <UpdatePage />
         ) : path === '/mods' ? (
           <AllMods />
         ) : (
           <>
+            {latestUpdate && (
+              <UpdateBanner latest={latestUpdate} />
+            )}
             <Hero />
             <Marquee />
             <ModSection />

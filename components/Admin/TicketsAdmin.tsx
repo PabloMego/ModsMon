@@ -204,6 +204,10 @@ const TicketsAdmin: React.FC = () => {
             <span className="material-icons-round text-[20px] text-slate-400 group-hover:text-slate-600">archive</span>
             Archivados
           </button>
+          <button type="button" onClick={() => { window.location.href = '/admin/updates'; }} className={`flex items-center gap-3 w-full text-left px-6 py-3 ${false ? 'bg-slate-900 text-white rounded-xl' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl'} font-medium transition-all group`}>
+            <span className="material-icons-round text-[20px] text-slate-400 group-hover:text-slate-600">update</span>
+            Actualizaciones
+          </button>
         </nav>
         <div className="mt-auto space-y-4 px-6">
           <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-xl font-medium hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-all">
