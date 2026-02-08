@@ -1,16 +1,5 @@
 {
   "rewrites": [
-    {
-      "source": "/updates/:slug",
-      "has": [
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "(?i)facebookexternalhit|Twitterbot|Discordbot|WhatsApp|Slackbot|Facebot|LinkedInBot|Pinterest"
-        }
-      ],
-      "destination": "/updates/:slug/index.html"
-    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
