@@ -13,6 +13,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!slug) return res.status(400).send('Missing slug');
 
   if (!SUPABASE_URL || !SUPABASE_KEY) {
+    const debugMode = req.query?._debug || req.query?.debug;
+    if (debugMode) {
+      return res.status(200).json({ ok: false, error: 'Supabase not configured on server', hasSupabaseUrl: Boolean(SUPABASE_URL), hasSupabaseKey: Boolean(SUPABASE_KEY), siteOriginConfigured: Boolean(SITE_ORIGIN) });
+    }
     return res.status(500).send('Supabase not configured on server');
   }
 
@@ -25,6 +29,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       headers: {
         apikey: SUPABASE_KEY,
         Authorization: `Bearer ${SUPABASE_KEY}`,
+        Accept: 'application/json'
       },
     });
 
@@ -33,8 +38,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(502).send('Failed to fetch post');
     }
 
-    const items = await r.json();
+    let items: any = null;
+    let fetchText = '';
+    try {
+      fetchText = await r.text();
+      items = JSON.parse(fetchText || 'null');
+    } catch (e) {
+      // keep raw text for debug
+      items = null;
+    }
     const post = (items && items[0]) || null;
+
+    // Debug mode: return a JSON summary of what happened
+    const debugMode = req.query?._debug || req.query?.debug;
+    if (debugMode) {
+      return res.status(200).json({
+        ok: true,
+        queryUrl,
+        fetchStatus: r.status,
+        fetchOk: r.ok,
+        fetchBodyPreview: (fetchText || '').slice(0, 400),
+        postFound: Boolean(post),
+        post: post ? { id: post.id, slug: post.slug, title: post.title, created_at: post.created_at, image_url: post.image_url } : null,
+        siteOrigin: SITE_ORIGIN ? SITE_ORIGIN : null,
+      });
+    }
 
     if (!post) {
       // Return minimal HTML so scrapers see something, and users get redirected to SPA
