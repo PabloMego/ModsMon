@@ -49,24 +49,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
     const post = (items && items[0]) || null;
 
-    // Debug mode: return a JSON summary of what happened
-    const debugMode = req.query?._debug || req.query?.debug;
-    if (debugMode) {
-      return res.status(200).json({
-        ok: true,
-        queryUrl,
-        fetchStatus: r.status,
-        fetchOk: r.ok,
-        fetchBodyPreview: (fetchText || '').slice(0, 400),
-        postFound: Boolean(post),
-        post: post ? { id: post.id, slug: post.slug, title: post.title, created_at: post.created_at, image_url: post.image_url } : null,
-        siteOrigin: SITE_ORIGIN ? SITE_ORIGIN : null,
-      });
-    }
+      // determine origin from request if SITE_ORIGIN not configured
+      const reqHost = (req.headers['x-forwarded-host'] as string) || (req.headers.host as string) || '';
+      const reqProto = (req.headers['x-forwarded-proto'] as string) || 'https';
+      const requestOrigin = reqHost ? `${reqProto}://${reqHost}` : SITE_ORIGIN;
+
+      // Debug mode: return a JSON summary of what happened
+      const debugMode = req.query?._debug || req.query?.debug;
+      if (debugMode) {
+        return res.status(200).json({
+          ok: true,
+          queryUrl,
+          fetchStatus: r.status,
+          fetchOk: r.ok,
+          fetchBodyPreview: (fetchText || '').slice(0, 400),
+          postFound: Boolean(post),
+          post: post ? { id: post.id, slug: post.slug, title: post.title, created_at: post.created_at, image_url: post.image_url } : null,
+          siteOriginEnv: SITE_ORIGIN ? SITE_ORIGIN : null,
+          requestOrigin,
+        });
+      }
 
     if (!post) {
       // Return minimal HTML so scrapers see something, and users get redirected to SPA
-      const url = `${SITE_ORIGIN}/updates/${encodeURIComponent(slug)}`;
+      const url = `${requestOrigin}/updates/${encodeURIComponent(slug)}`;
       return res.status(200).setHeader('content-type', 'text/html').send(`<!doctype html>
 <html>
 <head>
@@ -80,8 +86,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     const title = escapeHtml(post.title || 'Nueva actualización');
     const description = escapeHtml((post.content || '').slice(0, 200));
-    const image = post.image_url ? absoluteUrl(post.image_url) : `${SITE_ORIGIN}/og-default.png`;
-    const postUrl = `${SITE_ORIGIN}/updates/${encodeURIComponent(post.slug || post.id)}`;
+    const image = post.image_url ? absoluteUrl(post.image_url, requestOrigin) : `${requestOrigin}/og-default.png`;
+    const postUrl = `${requestOrigin}/updates/${encodeURIComponent(post.slug || post.id)}`;
 
     const html = `<!doctype html>
 <html>
@@ -122,9 +128,9 @@ function escapeHtml(s: string) {
     .replace(/'/g, '&#039;');
 }
 
-function absoluteUrl(u: string) {
+function absoluteUrl(u: string, origin?: string) {
   if (!u) return u;
   if (u.startsWith('http://') || u.startsWith('https://')) return u;
-  // assume path relative to SITE_ORIGIN
-  return `${SITE_ORIGIN.replace(/\/+$/,'')}/${u.replace(/^\/+/, '')}`;
+  const base = origin || SITE_ORIGIN;
+  return `${base.replace(/\/+$/,'')}/${u.replace(/^\/+/, '')}`;
 }
