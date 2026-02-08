@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "migrate:updates": "node scripts/run_sql.js sql/updates_table.sql",
-    "prebuild": "node scripts/generate_og.js",
+      "migrate:updates": "node scripts/run_sql.js sql/updates_table.sql",
     "build": "vite build",
     "preview": "vite preview"
   },
