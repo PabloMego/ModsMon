@@ -41,8 +41,17 @@ import fetch from 'node-fetch';
       await mkdir(dir, { recursive: true });
       const title = escapeHtml(post.title || 'Actualización');
       const description = escapeHtml((post.content || '').slice(0, 200));
-      const image = post.image_url ? absoluteUrl(post.image_url, SITE_ORIGIN) : `${SITE_ORIGIN.replace(/\/+$/,'')}/og-default.png`;
-      const postUrl = `${SITE_ORIGIN.replace(/\/+$/,'')}/updates/${encodeURIComponent(slug)}`;
+      // Use relative post URL so browsers are redirected within the same origin
+      const postUrl = `/updates/${encodeURIComponent(slug)}`;
+
+      // Prefer absolute image URLs when possible; if image_url is relative and SITE_ORIGIN is set,
+      // build an absolute URL, otherwise fall back to a site-root relative path (/og-default.png)
+      let image = `/og-default.png`;
+      if (post.image_url) {
+        if (/^https?:\/\//i.test(post.image_url)) image = post.image_url;
+        else if (SITE_ORIGIN) image = absoluteUrl(post.image_url, SITE_ORIGIN);
+        else image = post.image_url.startsWith('/') ? post.image_url : `/${post.image_url}`;
+      }
 
       const html = `<!doctype html>
 <html>
@@ -52,7 +61,7 @@ import fetch from 'node-fetch';
   <meta property="og:title" content="${title}" />
   <meta property="og:description" content="${description}" />
   <meta property="og:image" content="${image}" />
-  <meta property="og:url" content="${postUrl}" />
+  <meta property="og:url" content="${SITE_ORIGIN ? SITE_ORIGIN.replace(/\/+$/,'') + postUrl : postUrl}" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="canonical" href="${postUrl}" />
   <title>${title}</title>
